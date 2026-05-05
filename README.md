@@ -42,13 +42,11 @@ python/run_experiments.py     experiment runner and CSV writer
 python/plot_results.py        ablation plots
 python/test_solvers.py        deterministic correctness tests
 python/validate_results.py    CSV validation and solver agreement checks
-python/migrate_v1_results.py  one-shot migration for archived v1 results
 python/solvers/               Python solver wrappers
 src/                          C++ solver binaries
 graphs/                       generated graph files
 results/results.csv           canonical experiment CSV
 figures/                      generated plots
-v1/                           archived earlier results and figures
 ```
 
 ## Dependencies
@@ -200,18 +198,6 @@ Figures are saved to `figures/`:
 - memory vs density for fixed `n`
 - solver landscape at density 0.05
 - small-instance CPLEX comparison
-
-## Current Data
-
-The archived `v1/results/results.csv` has been migrated into the canonical
-`results/results.csv` schema with duplicate keys collapsed. The original
-archive remains in `v1/`.
-
-To repeat the migration:
-
-```powershell
-python python/migrate_v1_results.py
-```
 
 ## Known Limitations
 
