@@ -1,0 +1,9 @@
+gurobipy>=13.0.0
+cplex>=22.1.0
+highspy>=1.7.0
+scipy>=1.11.0
+numpy>=1.26.0
+pandas>=2.0.0
+matplotlib>=3.7.0
+psutil>=5.9.0
+tqdm>=4.65.0
