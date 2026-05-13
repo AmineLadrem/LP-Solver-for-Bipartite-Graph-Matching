@@ -16,7 +16,7 @@ PROJECT_ROOT = Path(__file__).parent.parent
 RESULTS_CSV_DEFAULT = PROJECT_ROOT / "results" / "results.csv"
 FIGURES_DIR_DEFAULT = PROJECT_ROOT / "figures"
 
-PRIMARY_SOLVERS = ["gurobi_lp", "cplex_lp", "lemon_hk"]
+PRIMARY_SOLVERS = ["gurobi_lp", "lemon_hk"]
 EXTRA_SOLVERS = ["highs_lp", "scipy_lp"]
 ALL_SOLVERS = PRIMARY_SOLVERS + EXTRA_SOLVERS
 
@@ -25,12 +25,10 @@ N_REP = [1024, 4096, 16384]
 
 SOLVER_STYLE = {
     "gurobi_lp": dict(color="#d73027", marker="o", label="Gurobi LP"),
-    "cplex_lp": dict(color="#4575b4", marker="s", label="CPLEX LP"),
     "lemon_hk": dict(color="#1a9850", marker="*", label="LEMON Hopcroft-Karp"),
     "highs_lp": dict(color="#984ea3", marker="^", label="HiGHS LP"),
     "scipy_lp": dict(color="#ff7f00", marker="D", label="SciPy LP"),
     "gurobi_lp_cpp": dict(color="#a50026", marker="o", label="Gurobi LP (C++)"),
-    "cplex_lp_cpp": dict(color="#313695", marker="s", label="CPLEX LP (C++)"),
     "lemon_hk_cpp": dict(color="#006837", marker="*", label="LEMON HK (C++)"),
     "highs_lp_cpp": dict(color="#762a83", marker="^", label="HiGHS LP (C++)"),
 }
@@ -184,25 +182,6 @@ def plot_solver_landscape(df: pd.DataFrame, solvers: list[str], figures_dir: Pat
     print(f"Saved {fname}")
 
 
-def plot_cplex_small(df: pd.DataFrame, figures_dir: Path):
-    sub = df[df["n"] <= 256]
-    if sub.empty:
-        return
-    fig, ax = plt.subplots(figsize=(7, 5))
-    _plot_series(ax, sub, "n", "time_seconds", ALL_SOLVERS)
-    _format_power2_axis(ax)
-    ax.set_yscale("log")
-    ax.set_xlabel("n (total vertices)")
-    ax.set_ylabel("Time (s)")
-    ax.set_title("Small instances with CPLEX (n <= 256)")
-    ax.legend(loc="upper left")
-    _grid(ax)
-    fig.tight_layout()
-    fname = figures_dir / "cplex_small_comparison.pdf"
-    fig.savefig(fname)
-    plt.close(fig)
-    print(f"Saved {fname}")
-
 
 def print_summary(df_all: pd.DataFrame, df_opt: pd.DataFrame, solvers: list[str]):
     print("=== Result summary ===")
@@ -257,7 +236,6 @@ def main():
     plot_vs_n(df_opt, "peak_memory_mb", "Peak memory (MB)", "mem", args.solvers, args.figures_dir)
     plot_vs_density(df_opt, "peak_memory_mb", "Peak memory (MB)", "mem", args.solvers, args.figures_dir)
     plot_solver_landscape(df_opt, args.solvers, args.figures_dir)
-    plot_cplex_small(df_opt, args.figures_dir)
     print(f"\nAll plots saved to {args.figures_dir}")
 
 

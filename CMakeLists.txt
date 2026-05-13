@@ -12,8 +12,7 @@
 #       -DHIGHS_DIR="C:/dev/highs" \
 #       -DGUROBI_INCLUDE_DIR="C:/dev/gurobi_include" \
 #       -DGUROBI_LIB="C:/dev/gurobi130.lib" \
-#       -DGUROBI_DLL="C:/.../gurobipy/gurobi130.dll" \
-#       -DCPLEX_ROOT="C:/Program Files/IBM/ILOG/CPLEX_Studio_Community2212"
+#       -DGUROBI_DLL="C:/.../gurobipy/gurobi130.dll"
 #
 # Then:  cmake --build build --config Release
 #
@@ -30,7 +29,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG   "${CMAKE_SOURCE_DIR}/bin")
 option(BUILD_LEMON_HK  "Build LEMON Hopcroft-Karp baseline"   ON)
 option(BUILD_HIGHS_LP  "Build HiGHS LP target"                ON)
 option(BUILD_GUROBI_LP "Build Gurobi LP target"               ON)
-option(BUILD_CPLEX_LP  "Build CPLEX LP target"                ON)
 
 # ── LEMON (header-only) ─────────────────────────────────────────────────────
 set(LEMON_INCLUDE_DIR "C:/dev/lemon-src/include"
@@ -47,12 +45,6 @@ set(GUROBI_LIB "C:/dev/gurobi130.lib"
     CACHE FILEPATH "Gurobi import library (.lib generated from gurobi*.dll)")
 set(GUROBI_DLL ""
     CACHE FILEPATH "Path to gurobi*.dll (copied next to the binary if set)")
-
-# ── CPLEX (Studio install) ──────────────────────────────────────────────────
-set(CPLEX_ROOT "C:/Program Files/IBM/ILOG/CPLEX_Studio_Community2212"
-    CACHE PATH "Root of the IBM ILOG CPLEX Studio install")
-set(CPLEX_LIB_SUBDIR   "x64_windows_msvc14/stat_mda"
-    CACHE STRING "MSVC ABI subdirectory under <CPLEX_ROOT>/cplex/lib")
 
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
@@ -118,34 +110,3 @@ if(BUILD_GUROBI_LP)
     endif()
 endif()
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Target: cplex_lp
-# ─────────────────────────────────────────────────────────────────────────────
-if(BUILD_CPLEX_LP)
-    set(CPLEX_INCLUDE_DIR  "${CPLEX_ROOT}/cplex/include")
-    set(CONCERT_INCLUDE_DIR "${CPLEX_ROOT}/concert/include")
-    set(CPLEX_LIB_DIR       "${CPLEX_ROOT}/cplex/lib/${CPLEX_LIB_SUBDIR}")
-    set(CONCERT_LIB_DIR     "${CPLEX_ROOT}/concert/lib/${CPLEX_LIB_SUBDIR}")
-
-    find_library(CPLEX_LIB    NAMES cplex2212 cplex
-                 PATHS "${CPLEX_LIB_DIR}" NO_DEFAULT_PATH)
-    find_library(ILOCPLEX_LIB NAMES ilocplex
-                 PATHS "${CPLEX_LIB_DIR}" NO_DEFAULT_PATH)
-
-    if(CPLEX_LIB AND ILOCPLEX_LIB AND EXISTS "${CPLEX_INCLUDE_DIR}/ilcplex/cplex.h")
-        add_executable(cplex_lp src/cplex_lp.cpp)
-        target_include_directories(cplex_lp PRIVATE
-            ${CPLEX_INCLUDE_DIR} ${CONCERT_INCLUDE_DIR})
-        target_link_libraries(cplex_lp PRIVATE
-            ${ILOCPLEX_LIB} ${CPLEX_LIB})
-        if(WIN32)
-            target_link_libraries(cplex_lp PRIVATE psapi)
-        endif()
-        target_compile_definitions(cplex_lp PRIVATE
-            _CRT_SECURE_NO_WARNINGS IL_STD)
-    else()
-        message(WARNING
-            "CPLEX libraries not found under ${CPLEX_ROOT} - "
-            "skipping cplex_lp. Set -DCPLEX_ROOT=... to build it.")
-    endif()
-endif()

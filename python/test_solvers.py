@@ -8,11 +8,10 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "python"))
 
-from solvers import gurobi_lp, cplex_lp, highs_lp, scipy_lp, lemon_hk
+from solvers import gurobi_lp, highs_lp, scipy_lp, lemon_hk
 
 ALL_SOLVERS = {
     "gurobi_lp": gurobi_lp,
-    "cplex_lp":  cplex_lp,
     "highs_lp":  highs_lp,
     "scipy_lp":  scipy_lp,
     "lemon_hk":  lemon_hk,

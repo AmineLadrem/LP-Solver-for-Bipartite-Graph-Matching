@@ -2,7 +2,7 @@
 
 This repository contains experiments for the maximum-cardinality bipartite
 matching problem (MCBP). The main comparison is between an LP formulation
-solved by Gurobi/CPLEX and a combinatorial Hopcroft-Karp baseline implemented
+solved by Gurobi/HiGHS and a combinatorial Hopcroft-Karp baseline implemented
 with LEMON.
 
 The experiment pipeline is:
@@ -57,10 +57,9 @@ Python dependencies are listed in `requirements.txt`:
 python -m pip install -r requirements.txt
 ```
 
-The optional commercial solvers require working local installations/licenses:
+The optional commercial solver requires a working local installation/license:
 
 - Gurobi / `gurobipy`
-- IBM CPLEX / `cplex`
 
 The C++ binaries require:
 
@@ -69,7 +68,6 @@ The C++ binaries require:
 - LEMON headers
 - HiGHS C++ package, if building `highs_lp`
 - Gurobi C API, if building `gurobi_lp`
-- CPLEX Studio, if building `cplex_lp`
 
 ## Build C++ Solvers
 
@@ -82,8 +80,7 @@ cmake -B build -S . `
   -DHIGHS_DIR="C:/dev/highs" `
   -DGUROBI_INCLUDE_DIR="C:/dev/gurobi_include" `
   -DGUROBI_LIB="C:/dev/gurobi130.lib" `
-  -DGUROBI_DLL="C:/path/to/gurobi130.dll" `
-  -DCPLEX_ROOT="C:/Program Files/IBM/ILOG/CPLEX_Studio_Community2212"
+  -DGUROBI_DLL="C:/path/to/gurobi130.dll"
 
 cmake --build build --config Release
 ```
@@ -122,8 +119,7 @@ python python/test_solvers.py
 ```
 
 This runs hand-crafted tiny graphs with known optima and a generated medium
-graph if it exists. CPLEX may report `skipped` on instances above the CPLEX
-Community Edition 1000-variable limit.
+graph if it exists.
 
 ## Run Experiments
 
@@ -152,8 +148,8 @@ Common options:
 --sizes 64 128 256
 --densities 0.01 0.05
 --seeds 0 1 2
---solvers-python lemon_hk gurobi_lp cplex_lp highs_lp scipy_lp
---solvers-cpp lemon_hk gurobi_lp cplex_lp highs_lp
+--solvers-python lemon_hk gurobi_lp highs_lp scipy_lp
+--solvers-cpp lemon_hk gurobi_lp highs_lp
 --solvers-python none
 --solvers-cpp none
 --overwrite
@@ -197,13 +193,10 @@ Figures are saved to `figures/`:
 - time vs density for fixed `n`
 - memory vs density for fixed `n`
 - solver landscape at density 0.05
-- small-instance CPLEX comparison
 
 ## Known Limitations
 
-- CPLEX Community Edition is limited to 1000 variables, so many larger graphs
-  are marked `skipped`.
-- Gurobi and CPLEX require valid local licenses.
+- Gurobi requires a valid local license.
 - C++ memory measurement uses Windows `PeakWorkingSetSize`; non-Windows builds
   currently report `0.0` from the child process, though the Python parent still
   polls subprocess RSS when experiments are run through `run_experiments.py`.

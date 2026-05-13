@@ -26,14 +26,8 @@ CSV_FIELDS = [
     "status", "error_message",
 ]
 
-CPLEX_VAR_LIMIT = 1000
-
-
-CPLEX_NAME_PATTERN = re.compile(r"cplex", re.IGNORECASE)
-
-
-ALL_SOLVERS_PYTHON = ["lemon_hk", "gurobi_lp", "cplex_lp", "highs_lp", "scipy_lp"]
-ALL_SOLVERS_CPP    = ["lemon_hk", "gurobi_lp", "cplex_lp", "highs_lp"]
+ALL_SOLVERS_PYTHON = ["lemon_hk", "gurobi_lp", "highs_lp", "scipy_lp"]
+ALL_SOLVERS_CPP    = ["lemon_hk", "gurobi_lp", "highs_lp"]
 
 
 def parse_graph_name(fname: str):
@@ -307,22 +301,6 @@ def main():
             m = get_m(gf)
             n_left = n // 2
             n_right = n // 2
-
-            if CPLEX_NAME_PATTERN.search(sname) and m > CPLEX_VAR_LIMIT:
-                row = {
-                    "n": n, "n_left": n_left, "n_right": n_right,
-                    "density": d, "seed": seed, "m": m,
-                    "solver": sname, "language": lang,
-                    "matching_size": -1,
-                    "time_seconds": 0.0, "peak_memory_mb": 0.0,
-                    "status": "skipped",
-                    "error_message": (
-                        f"m={m} > CPLEX Community {CPLEX_VAR_LIMIT}-variable cap"
-                    ),
-                }
-                writer.writerow(row); csvf.flush()
-                done.add(key)
-                continue
 
             try:
                 result = sfn(str(gf), time_limit=args.time_limit)

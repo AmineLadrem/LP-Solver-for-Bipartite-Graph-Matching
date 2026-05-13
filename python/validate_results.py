@@ -13,7 +13,7 @@ PROJECT_ROOT = Path(__file__).parent.parent
 GRAPHS_DIR_DEFAULT = PROJECT_ROOT / "graphs"
 RESULTS_CSV_DEFAULT = PROJECT_ROOT / "results" / "results.csv"
 
-DEFAULT_SOLVERS = ["gurobi_lp", "cplex_lp", "highs_lp", "scipy_lp", "lemon_hk"]
+DEFAULT_SOLVERS = ["gurobi_lp", "highs_lp", "scipy_lp", "lemon_hk"]
 
 
 def parse_graph_name(name: str):
