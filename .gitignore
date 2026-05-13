@@ -3,3 +3,6 @@
 /bin
 /build
 /python/solvers/__pycache__
+/mcbp-experiment/bin
+/mcbp-experiment/build
+/mcbp-experiment/python/solvers/__pycache__
