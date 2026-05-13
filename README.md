@@ -57,21 +57,13 @@ The benchmark part compares these solvers:
 
 ## How to Run the Experiments
 
-Instead of running each Python script manually, open the project notebook and run all cells.
+To run the full benchmark experiment, open and run this notebook:
 
-Use Jupyter Notebook or JupyterLab:
-
-```bash
-jupyter notebook
+```text
+mcbp-experiment/run_full_benchmark.ipynb
 ```
 
-or
-
-```bash
-jupyter lab
-```
-
-Then open the `.ipynb` file and execute the cells from top to bottom.
+Run all cells from top to bottom.
 
 The notebook runs the experiment workflow, including graph generation, solver execution, validation, and plotting.
 
@@ -124,25 +116,9 @@ The result CSV contains solver runtime, memory usage, matching size, status, and
 
 ## Web Visualizer
 
-The visualizer is located in:
+Open the visualizer here:
 
-```text
-mcbp-visualizer/
-```
-
-Run it locally with:
-
-```bash
-cd mcbp-visualizer
-npm install
-npm run dev
-```
-
-Then open:
-
-```text
-http://localhost:3000
-```
+https://lp-solver-for-bipartite-graph-match.vercel.app/
 
 The visualizer explains:
 
@@ -188,4 +164,4 @@ python/plot_results.py        Create plots
 - Gurobi requires a valid local license.
 - Large dense graph instances may be skipped to avoid creating too many edges.
 - The web visualizer is fully client-side and does not need Python, C++, or external solvers.
-- For the experiment workflow, use the notebook instead of running every script one by one.
+- For the experiment workflow, use `mcbp-experiment/run_full_benchmark.ipynb` instead of running every script one by one.
