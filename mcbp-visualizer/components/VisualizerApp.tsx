@@ -164,11 +164,11 @@ export function VisualizerApp() {
           runDisabledReason={runDisabledReason}
         />
         <section className="flex min-h-0 min-w-0 flex-1 overflow-hidden">
-          <div className="grid min-h-0 min-w-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(0,1fr)_380px] xl:grid-cols-[minmax(0,1fr)_420px]">
+          <div className="grid h-full min-h-0 min-w-0 flex-1 auto-rows-fr grid-cols-1 lg:grid-cols-[minmax(0,1fr)_380px] xl:grid-cols-[minmax(0,1fr)_420px]">
             <div className="min-h-0 overflow-hidden border-b border-border bg-background lg:border-b-0 lg:border-r">
               <Visualization graph={state.graph} currentStep={currentStep} />
             </div>
-            <div className="overflow-y-auto">
+            <div className="flex min-h-0 flex-col overflow-y-auto">
               <AlgorithmPanel
                 algorithm={state.algorithm}
                 graph={state.graph}
