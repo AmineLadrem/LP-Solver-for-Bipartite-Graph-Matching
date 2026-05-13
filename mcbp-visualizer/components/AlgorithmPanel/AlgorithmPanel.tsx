@@ -1,4 +1,3 @@
-import { GreedyPanel } from "@/components/AlgorithmPanel/GreedyPanel";
 import { HopcroftKarpPanel } from "@/components/AlgorithmPanel/HopcroftKarpPanel";
 import { LPPanel } from "@/components/AlgorithmPanel/LPPanel";
 import { ComparisonTable } from "@/components/ComparisonTable";
@@ -18,7 +17,6 @@ interface Props {
 }
 
 const ALGORITHM_SECTION_LABELS: Record<AlgorithmName, string> = {
-  greedy: "Greedy",
   hopcroftKarp: "Hopcroft-Karp",
   "lp-gurobi": "Gurobi LP Model",
   "lp-highs": "HiGHS LP Model",
@@ -41,12 +39,10 @@ export function AlgorithmPanel({
   const isHK = algorithm === "hopcroftKarp";
 
   return (
-    <aside className="flex min-h-0 flex-col overflow-y-auto bg-surface p-4 xl:p-5">
+    <aside className="flex flex-col bg-surface p-4 xl:p-5">
       <h2 className="mb-4 text-xs font-semibold uppercase tracking-wider text-text-secondary">
         {ALGORITHM_SECTION_LABELS[algorithm]}
       </h2>
-
-      {algorithm === "greedy" && <GreedyPanel graph={graph} currentStep={currentStep} />}
 
       {(isHK || isLemon) && (
         <HopcroftKarpPanel graph={graph} currentStep={currentStep} algorithm={algorithm} />

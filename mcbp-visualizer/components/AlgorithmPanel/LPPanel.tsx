@@ -1,3 +1,5 @@
+import "katex/dist/katex.min.css";
+import { BlockMath, InlineMath } from "react-katex";
 import type { BipartiteGraph } from "@/lib/graph";
 import {
   LP_MATRIX_COLUMN_DISPLAY_LIMIT,
@@ -16,8 +18,6 @@ interface Props {
 const HONESTY_MESSAGE =
   "The web visualizer is browser-only. It does not run external solvers such as Gurobi, HiGHS, SciPy, or LEMON. It mirrors the same formulations and algorithms used in the benchmark layer. LP modes show model construction and solution interpretation; the final matching is computed with an in-browser Hopcroft-Karp implementation, which is valid here because the bipartite matching LP is integral by total unimodularity.";
 
-const TU_EXPLANATION =
-  "A_G is totally unimodular because each column has exactly one 1 in the U-rows and one 1 in the W-rows. Then the LP relaxation always has an integral optimal basic feasible solution.";
 
 export function LPPanel({ graph, currentStep, restrictionMessage }: Props) {
   const matrix = currentStep?.lpMatrix;
@@ -36,12 +36,9 @@ export function LPPanel({ graph, currentStep, restrictionMessage }: Props) {
 
   return (
     <div className="space-y-4">
-      {/* Honesty banner */}
       <div className="rounded-md border border-[#1d3a5c] bg-[#0d1f33] p-3 text-xs leading-relaxed text-[#93c5fd]">
         {HONESTY_MESSAGE}
       </div>
-
-      {/* Solver description */}
       {solverMode && (
         <div className="rounded-md border border-border bg-surface-raised p-3">
           <p className="mb-1 text-xs font-semibold text-text-secondary">
@@ -58,23 +55,25 @@ export function LPPanel({ graph, currentStep, restrictionMessage }: Props) {
           {restrictionMessage}
         </div>
       )}
-
-      {/* LP formulation */}
-      <div className="rounded-md border border-border bg-surface-raised p-3 font-mono text-xs leading-relaxed text-text-secondary">
-        <p className="mb-1 font-semibold text-text-primary">LP formulation</p>
-        <p>maximize &nbsp; &Sigma; x&#8321;...x&#8346; &nbsp; (one per edge)</p>
-        <p>subject to &Sigma;&#8202;&#8202;&#8202;x_e &le; 1 &nbsp; for all u &isin; U</p>
-        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &Sigma;&#8202;&#8202;&#8202;x_e &le; 1 &nbsp; for all w &isin; W</p>
-        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; x_e &ge; 0 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for all e &isin; E</p>
+      <div className="rounded-md border border-border bg-surface-raised p-3 text-xs leading-relaxed text-text-secondary">
+        <p className="mb-2 font-semibold text-text-primary">LP formulation</p>
+        <div className="[&_.katex]:text-text-primary [&_.katex-display]:my-0">
+          <BlockMath math={String.raw`\begin{aligned}
+\max \quad & \sum_{e \in E} x_e \\
+\text{s.t.} \quad & \sum_{e \in \delta(u)} x_e \leq 1 & \forall\, u \in U \\
+& \sum_{e \in \delta(w)} x_e \leq 1 & \forall\, w \in W \\
+& x_e \geq 0 & \forall\, e \in E
+\end{aligned}`} />
+        </div>
       </div>
-
-      {/* TU explanation */}
-      <div className="rounded-md border border-[#1a3a2a] bg-[#0a1f14] p-3 text-xs leading-relaxed text-[#86efac]">
+      <div className="rounded-md border border-[#1a3a2a] bg-[#0a1f14] p-3 text-xs leading-relaxed text-[#86efac] [&_.katex]:text-[#86efac]">
         <p className="mb-1 font-semibold">Total Unimodularity Guarantee</p>
-        {TU_EXPLANATION}
+        <InlineMath math="A_G" /> is totally unimodular: each column has exactly one{" "}
+        <InlineMath math="1" /> in the <InlineMath math="U" />-rows and one{" "}
+        <InlineMath math="1" /> in the <InlineMath math="W" />-rows, so the LP relaxation always
+        has an integral optimal basic feasible solution.
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-2 gap-2 text-sm">
         <Stat label="Objective" value={currentStep?.lpObjective ?? "-"} />
         <Stat
@@ -93,14 +92,12 @@ export function LPPanel({ graph, currentStep, restrictionMessage }: Props) {
         <Stat label="Vertices" value={graph.vertices.length} />
       </div>
 
-      {/* Step message */}
       {currentStep?.lpMessage && (
         <div className="rounded-md border border-border bg-surface-raised p-3 text-xs leading-relaxed text-text-secondary">
           {currentStep.lpMessage}
         </div>
       )}
 
-      {/* Matrix A_G */}
       {matrix ? (
         <section>
           <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-text-secondary">
@@ -155,8 +152,6 @@ export function LPPanel({ graph, currentStep, restrictionMessage }: Props) {
       ) : (
         <p className="text-sm text-text-secondary">Run LP to build the incidence matrix.</p>
       )}
-
-      {/* Solution vector x */}
       {solution.length > 0 && (
         <section>
           <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-text-secondary">

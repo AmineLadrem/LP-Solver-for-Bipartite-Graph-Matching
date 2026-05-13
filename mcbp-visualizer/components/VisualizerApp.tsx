@@ -7,13 +7,11 @@ import { Header } from "@/components/Header";
 import { Visualization } from "@/components/Visualization";
 import { useAnimationPlayer } from "@/hooks/useAnimationPlayer";
 import { appReducer, initialState, isLPAlgorithm } from "@/lib/appState";
-import { runGreedy } from "@/lib/algorithms/greedy";
-import { computeHopcroftKarpMatching, runHopcroftKarp } from "@/lib/algorithms/hopcroftKarp";
+import { runHopcroftKarp } from "@/lib/algorithms/hopcroftKarp";
 import { LP_EDGE_LIMIT, LP_VERTEX_LIMIT, LP_SOLVER_LABELS, runLP } from "@/lib/algorithms/lp";
 import type { AlgorithmName, AlgorithmResult, LPSolverMode, RunValidation, Step } from "@/lib/types";
 
 const ALGORITHM_LABELS: Record<AlgorithmName, string> = {
-  greedy: "Greedy",
   hopcroftKarp: "Hopcroft-Karp",
   ...LP_SOLVER_LABELS,
 };
@@ -55,9 +53,7 @@ export function VisualizerApp() {
     }
 
     let steps: Step[];
-    if (state.algorithm === "greedy") {
-      steps = runGreedy(state.graph);
-    } else if (state.algorithm === "hopcroftKarp") {
+    if (state.algorithm === "hopcroftKarp") {
       steps = runHopcroftKarp(state.graph);
     } else {
       steps = runLP(state.graph, state.algorithm as LPSolverMode);
@@ -80,17 +76,14 @@ export function VisualizerApp() {
       if (!step.isComplete) return;
 
       const matchingSize = step.matchedEdgeIds.length;
-      const optimalMatchingSize = computeHopcroftKarpMatching(state.graph).matchingEdgeIds.length;
       const result: AlgorithmResult = {
         algorithm: step.algorithm,
         matchingSize,
         stepsTaken: steps.length,
         optimal:
-          step.algorithm === "greedy"
-            ? matchingSize === optimalMatchingSize
-            : step.algorithm === "hopcroftKarp" || isLPAlgorithm(step.algorithm)
-              ? true
-              : "unknown",
+          step.algorithm === "hopcroftKarp" || isLPAlgorithm(step.algorithm)
+            ? true
+            : "unknown",
       };
 
       const existing = state.results.find((item) => item.algorithm === result.algorithm);
@@ -158,9 +151,9 @@ export function VisualizerApp() {
       : state.statusMessage;
 
   return (
-    <div className="flex min-h-screen flex-col bg-background text-text-primary">
+    <div className="flex h-screen flex-col overflow-hidden bg-background text-text-primary">
       <Header />
-      <main className="flex min-h-0 flex-1 flex-col lg:flex-row">
+      <main className="flex min-h-0 flex-1 overflow-hidden lg:flex-row">
         <ControlsPanel
           state={state}
           dispatch={dispatch}
@@ -170,21 +163,23 @@ export function VisualizerApp() {
           onSkipToEnd={handleSkipToEnd}
           runDisabledReason={runDisabledReason}
         />
-        <section className="grid min-h-[calc(100vh-72px)] flex-1 bg-background lg:min-h-0">
-          <div className="grid min-h-0 grid-cols-1 lg:grid-cols-[minmax(0,1fr)_380px] xl:grid-cols-[minmax(0,1fr)_420px]">
-            <div className="min-h-[420px] border-b border-border bg-background lg:border-b-0 lg:border-r">
+        <section className="flex min-h-0 min-w-0 flex-1 overflow-hidden">
+          <div className="grid min-h-0 min-w-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(0,1fr)_380px] xl:grid-cols-[minmax(0,1fr)_420px]">
+            <div className="min-h-0 overflow-hidden border-b border-border bg-background lg:border-b-0 lg:border-r">
               <Visualization graph={state.graph} currentStep={currentStep} />
             </div>
-            <AlgorithmPanel
-              algorithm={state.algorithm}
-              graph={state.graph}
-              currentStep={currentStep}
-              statusMessage={state.statusMessage}
-              warningMessage={state.warningMessage}
-              stepMessage={currentStep?.description ?? fallbackMessage}
-              restrictionMessage={runDisabledReason}
-              results={state.results}
-            />
+            <div className="overflow-y-auto">
+              <AlgorithmPanel
+                algorithm={state.algorithm}
+                graph={state.graph}
+                currentStep={currentStep}
+                statusMessage={state.statusMessage}
+                warningMessage={state.warningMessage}
+                stepMessage={currentStep?.description ?? fallbackMessage}
+                restrictionMessage={runDisabledReason}
+                results={state.results}
+              />
+            </div>
           </div>
         </section>
       </main>

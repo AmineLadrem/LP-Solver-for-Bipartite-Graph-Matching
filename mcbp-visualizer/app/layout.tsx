@@ -15,9 +15,9 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Bipartite Matching Visualizer",
+  title: "Maximum-Cardinality Bipartite Matching Visualizer",
   description:
-    "Comparing greedy, Hopcroft-Karp, and linear programming approaches to maximum-cardinality bipartite matching.",
+    "Comparing Hopcroft-Karp and linear programming approaches to maximum-cardinality bipartite matching.",
 };
 
 export default function RootLayout({
@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background text-text-primary antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} h-screen overflow-hidden bg-background text-text-primary antialiased`}
       >
         {children}
       </body>

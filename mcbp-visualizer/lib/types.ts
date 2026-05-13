@@ -1,5 +1,4 @@
 export type AlgorithmName =
-  | "greedy"
   | "hopcroftKarp"
   | "lp-gurobi"
   | "lp-highs"
@@ -7,8 +6,6 @@ export type AlgorithmName =
   | "lp-lemon";
 
 export type LPSolverMode = "lp-gurobi" | "lp-highs" | "lp-scipy" | "lp-lemon";
-
-export type GreedyStatus = "pending" | "added" | "skipped";
 
 export interface Step {
   id: string;
@@ -19,7 +16,6 @@ export interface Step {
   highlightedEdgeIds?: string[];
   dimmedEdgeIds?: string[];
   consideredEdgeId?: string;
-  greedyStatuses?: Record<string, GreedyStatus>;
   bfsLayers?: string[][];
   hkPhase?: number;
   augmentingPaths?: string[][];

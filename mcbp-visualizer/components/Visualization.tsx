@@ -81,13 +81,33 @@ export function Visualization({ graph, currentStep }: Props) {
   return (
     <div
       ref={containerRef}
-      className="relative grid h-full w-full grid-rows-[minmax(0,1fr)_48px] overflow-hidden bg-background"
+      className="relative grid h-full w-full grid-rows-[48px_minmax(0,1fr)] overflow-hidden bg-background"
     >
+      <div className="row-start-1 flex items-center justify-center border-b border-border bg-background px-4 text-xs text-text-secondary">
+        <div className="flex items-center gap-6 rounded-md border border-border bg-surface-raised px-3 py-2">
+          <span className="flex items-center gap-2">
+            <span className="inline-block h-0.5 w-4 bg-[#3f3f46]" />
+            edge
+          </span>
+          <span className="flex items-center gap-2">
+            <span className="inline-block h-[3px] w-4 bg-accent" />
+            matched
+          </span>
+          <span className="flex items-center gap-2">
+            <span className="inline-block h-[2.5px] w-4 bg-[#fbbf24]" />
+            exploring
+          </span>
+          <span className="flex items-center gap-2">
+            <span className="inline-block h-[3px] w-4 bg-[#22c55e]" />
+            final
+          </span>
+        </div>
+      </div>
       <svg
         width={dimensions.width}
         height={graphHeight}
         viewBox={`0 0 ${dimensions.width} ${graphHeight}`}
-        className="row-start-1"
+        className="row-start-2"
         role="img"
         aria-label={`Bipartite graph with ${graph.uSize} left vertices, ${graph.wSize} right vertices, and ${graph.edges.length} edges`}
       >
@@ -235,26 +255,6 @@ export function Visualization({ graph, currentStep }: Props) {
         </g>
       </svg>
 
-      <div className="row-start-2 flex items-center justify-end border-t border-border bg-background px-4 text-xs text-text-secondary">
-        <div className="flex items-center gap-3 rounded-md border border-border bg-surface-raised px-3 py-2">
-          <span className="flex items-center gap-1.5">
-            <span className="inline-block h-0.5 w-4 bg-[#3f3f46]" />
-            edge
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="inline-block h-[3px] w-4 bg-accent" />
-            matched
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="inline-block h-[2.5px] w-4 bg-[#fbbf24]" />
-            exploring
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="inline-block h-[3px] w-4 bg-[#22c55e]" />
-            final
-          </span>
-        </div>
-      </div>
     </div>
   );
 }

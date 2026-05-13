@@ -69,7 +69,7 @@ function makeInitialState(): AppState {
       graphParams.seed
     ),
     graphParams,
-    algorithm: "greedy",
+    algorithm: "hopcroftKarp",
     steps: [],
     currentStepIndex: 0,
     isPlaying: false,

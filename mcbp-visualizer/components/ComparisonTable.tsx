@@ -1,7 +1,6 @@
 import type { AlgorithmName, AlgorithmResult } from "@/lib/types";
 
 const LABELS: Record<AlgorithmName, string> = {
-  greedy: "Greedy",
   hopcroftKarp: "Hopcroft-Karp",
   "lp-gurobi": "Gurobi LP",
   "lp-highs": "HiGHS LP",

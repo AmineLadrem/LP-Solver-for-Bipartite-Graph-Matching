@@ -1,5 +1,7 @@
 "use client";
 
+import "katex/dist/katex.min.css";
+import { BlockMath } from "react-katex";
 import {
   Dialog,
   DialogContent,
@@ -11,16 +13,10 @@ import {
 
 export function Header() {
   return (
-    <header className="flex h-[72px] shrink-0 items-center border-b border-border bg-surface px-4 md:px-6">
-      <div className="flex min-w-0 flex-col">
-        <h1 className="truncate text-base font-semibold leading-tight text-text-primary">
-          Bipartite Matching Visualizer
-        </h1>
-        <p className="truncate text-xs text-text-secondary">
-          Educational browser demo &mdash; LP formulation &amp; Hopcroft&ndash;Karp algorithm.
-          No backend required.
-        </p>
-      </div>
+    <header className="flex h-14 shrink-0 items-center border-b border-border bg-surface px-4 md:px-6">
+      <h1 className="truncate text-sm font-semibold text-text-primary">
+        Maximum-Cardinality Bipartite Matching Visualizer
+      </h1>
       <div className="ml-auto">
         <AboutDialog />
       </div>
@@ -62,12 +58,12 @@ function AboutDialog() {
 
           <div className="space-y-2 text-xs">
             <p className="font-semibold text-text-primary">LP formulation (all LP modes)</p>
-            <pre className="rounded border border-border bg-surface-raised p-2 font-mono leading-relaxed">
-{`maximize   Σ x_e
-subject to Σ_{e∈δ(u)} x_e ≤ 1  ∀ u ∈ U
-           Σ_{e∈δ(w)} x_e ≤ 1  ∀ w ∈ W
-           x_e ≥ 0              ∀ e ∈ E`}
-            </pre>
+            <KatexBlock math={String.raw`\begin{aligned}
+\max \quad & \sum_{e \in E} x_e \\
+\text{s.t.} \quad & \sum_{e \in \delta(u)} x_e \leq 1 & \forall\, u \in U \\
+& \sum_{e \in \delta(w)} x_e \leq 1 & \forall\, w \in W \\
+& x_e \geq 0 & \forall\, e \in E
+\end{aligned}`} />
           </div>
 
           <div className="space-y-1 text-xs">
@@ -86,5 +82,13 @@ subject to Σ_{e∈δ(u)} x_e ≤ 1  ∀ u ∈ U
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function KatexBlock({ math }: { math: string }) {
+  return (
+    <div className="rounded border border-border bg-surface-raised p-3 [&_.katex]:text-text-primary [&_.katex-display]:my-0">
+      <BlockMath math={math} />
+    </div>
   );
 }

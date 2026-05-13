@@ -15,7 +15,6 @@ import { Slider } from "@/components/ui/slider";
 import type { AppAction, AppState } from "@/lib/appState";
 import { LP_SOLVER_LABELS, LP_SOLVER_DESCRIPTIONS } from "@/lib/algorithms/lp";
 import type { AlgorithmName, LPSolverMode } from "@/lib/types";
-// AlgorithmName used in AlgButton prop type below
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -53,7 +52,7 @@ export function ControlsPanel({
   const runDisabled = Boolean(runDisabledReason);
 
   return (
-    <div className="flex w-full shrink-0 flex-col gap-5 border-b border-border bg-surface p-5 lg:h-full lg:w-64 lg:overflow-y-auto lg:border-b-0 lg:border-r">
+    <div className="flex w-full shrink-0 flex-col gap-5 overflow-y-auto border-b border-border bg-surface p-5 lg:h-full lg:w-64 lg:border-b-0 lg:border-r">
       <section>
         <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
           Graph

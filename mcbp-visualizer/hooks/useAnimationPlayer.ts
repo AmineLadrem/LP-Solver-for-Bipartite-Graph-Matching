@@ -2,7 +2,6 @@
 import { useEffect, useRef, type Dispatch } from "react";
 import type { AppState, AppAction } from "../lib/appState";
 
-// Base interval in ms between steps at 1x speed
 const BASE_INTERVAL_MS = 800;
 
 export function useAnimationPlayer(
@@ -25,7 +24,6 @@ export function useAnimationPlayer(
       return;
     }
 
-    // Already at the end
     if (currentStepIndex >= steps.length - 1) {
       dispatch({ type: "SET_PLAYING", playing: false });
       return;
