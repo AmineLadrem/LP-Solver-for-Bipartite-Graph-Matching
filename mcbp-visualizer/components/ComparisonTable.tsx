@@ -3,7 +3,10 @@ import type { AlgorithmName, AlgorithmResult } from "@/lib/types";
 const LABELS: Record<AlgorithmName, string> = {
   greedy: "Greedy",
   hopcroftKarp: "Hopcroft-Karp",
-  lp: "LP",
+  "lp-gurobi": "Gurobi LP",
+  "lp-highs": "HiGHS LP",
+  "lp-scipy": "SciPy linprog",
+  "lp-lemon": "LEMON HK",
 };
 
 interface Props {
@@ -34,14 +37,14 @@ export function ComparisonTable({ results }: Props) {
             <tbody>
               {results.map((result) => (
                 <tr key={result.algorithm} className="border-t border-border text-text-primary">
-                  <td className="px-3 py-2">{LABELS[result.algorithm]}</td>
+                  <td className="px-3 py-2">{LABELS[result.algorithm] ?? result.algorithm}</td>
                   <td className="px-3 py-2 font-mono">{result.matchingSize}</td>
                   <td className="px-3 py-2 font-mono">{result.stepsTaken}</td>
                   <td className="px-3 py-2">
                     {result.optimal === "unknown"
-                      ? "- Unknown"
+                      ? "— Unknown"
                       : result.optimal
-                        ? "OK Optimal"
+                        ? "Optimal"
                         : "Not optimal"}
                   </td>
                 </tr>

@@ -1,17 +1,30 @@
 import type { BipartiteGraph } from "@/lib/graph";
-import type { Step } from "@/lib/types";
+import type { AlgorithmName, Step } from "@/lib/types";
 
 interface Props {
   graph: BipartiteGraph;
   currentStep: Step | null;
+  algorithm: AlgorithmName;
 }
 
-export function HopcroftKarpPanel({ graph, currentStep }: Props) {
+const DESCRIPTION: Record<string, string> = {
+  hopcroftKarp:
+    "Standard Hopcroft-Karp algorithm: BFS finds shortest augmenting paths; DFS finds vertex-disjoint augmenting paths within those layers. O(√|V| · |E|) time.",
+  "lp-lemon":
+    "Browser implementation of Hopcroft-Karp, conceptually matching the LEMON benchmark solver. The same BFS/DFS logic is used; only the runtime environment differs.",
+};
+
+export function HopcroftKarpPanel({ graph, currentStep, algorithm }: Props) {
   const layers = currentStep?.bfsLayers ?? [];
   const paths = currentStep?.augmentingPaths ?? [];
+  const desc = DESCRIPTION[algorithm] ?? DESCRIPTION.hopcroftKarp;
 
   return (
     <div className="space-y-4">
+      <div className="rounded-md border border-border bg-surface-raised p-3 text-xs leading-relaxed text-text-secondary">
+        {desc}
+      </div>
+
       <div className="grid grid-cols-2 gap-2 text-sm">
         <Stat label="Phase" value={currentStep?.hkPhase ?? 0} />
         <Stat label="Matched" value={currentStep?.matchedEdgeIds.length ?? 0} />
@@ -49,7 +62,7 @@ export function HopcroftKarpPanel({ graph, currentStep }: Props) {
           <div className="space-y-2">
             {paths.map((path, index) => (
               <div key={`${index}-${path.join("-")}`} className="font-mono text-xs text-text-primary">
-                {path.join(" -> ")}
+                {path.join(" → ")}
               </div>
             ))}
           </div>

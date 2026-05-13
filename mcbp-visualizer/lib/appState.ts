@@ -38,6 +38,17 @@ export type AppAction =
   | { type: "SET_MESSAGE"; message: string; warning?: string | null }
   | { type: "REGENERATE"; seed: number };
 
+export const LP_ALGORITHM_NAMES: AlgorithmName[] = [
+  "lp-gurobi",
+  "lp-highs",
+  "lp-scipy",
+  "lp-lemon",
+];
+
+export function isLPAlgorithm(alg: AlgorithmName): boolean {
+  return LP_ALGORITHM_NAMES.includes(alg);
+}
+
 const DEFAULT_PARAMS: GraphParams = {
   uSize: 6,
   wSize: 6,

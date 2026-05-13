@@ -1,5 +1,3 @@
-
-
 import time
 
 import numpy as np
@@ -7,7 +5,6 @@ import scipy.sparse as sp
 from scipy.optimize import linprog
 
 from ._common import make_result, memory_monitor, read_graph
-
 
 def solve(graph_path: str, time_limit: float = 300.0) -> dict:
     with memory_monitor() as peak_mb:
@@ -24,7 +21,7 @@ def solve(graph_path: str, time_limit: float = 300.0) -> dict:
                     status="optimal",
                 )
 
-            c = -np.ones(m)        
+            c = -np.ones(m)
             row_data = []
             col_data = []
             left_edge  = [[] for _ in range(n_left)]

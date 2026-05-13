@@ -1,5 +1,3 @@
-
-
 import argparse
 import os
 import random
@@ -13,9 +11,8 @@ DEFAULT_D      = [0.01, 0.025, 0.05, 0.075, 0.1]
 DEFAULT_SEEDS  = [0, 1, 2]
 DEFAULT_MAX_EDGES = 5_000_000
 
-
 def generate_graph(n: int, d: float, seed: int, max_edges: int):
-    
+
     if n % 2 != 0:
         raise ValueError("n must be even")
     n_left = n // 2
@@ -37,7 +34,6 @@ def generate_graph(n: int, d: float, seed: int, max_edges: int):
         edges = all_edges[:m]
     return n_left, n_right, edges
 
-
 def write_graph(path: Path, n_left: int, n_right: int, edges):
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w") as f:
@@ -45,10 +41,8 @@ def write_graph(path: Path, n_left: int, n_right: int, edges):
         for u, w in edges:
             f.write(f"{u} {w}\n")
 
-
 def graph_filename(n: int, d: float, seed: int) -> str:
     return f"n{n:05d}_d{int(round(d * 1000)):03d}_s{seed:02d}.graph"
-
 
 def parse_args():
     p = argparse.ArgumentParser(description="Generate random bipartite graphs.")
@@ -66,7 +60,6 @@ def parse_args():
     p.add_argument("--overwrite", action="store_true",
                    help="Regenerate files even if they already exist.")
     return p.parse_args()
-
 
 def main():
     args = parse_args()
@@ -112,7 +105,6 @@ def main():
         f"\nDone. Wrote {written} new files, kept {existing} existing, "
         f"skipped {skipped} (over edge cap)."
     )
-
 
 if __name__ == "__main__":
     main()

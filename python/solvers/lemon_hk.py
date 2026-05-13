@@ -1,5 +1,3 @@
-
-
 import os
 import subprocess
 import threading
@@ -13,10 +11,8 @@ from ._common import make_result
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 BIN_DIR = PROJECT_ROOT / "bin"
 
-
 def _exe_name() -> str:
     return "lemon_hk.exe" if os.name == "nt" else "lemon_hk"
-
 
 def _poll_child_memory(stop_event, peak_mb, pid_holder):
     while not stop_event.is_set():
@@ -29,7 +25,6 @@ def _poll_child_memory(stop_event, peak_mb, pid_holder):
         except (psutil.NoSuchProcess, psutil.AccessDenied):
             pass
         time.sleep(0.05)
-
 
 def solve(graph_path: str, time_limit: float = 300.0) -> dict:
     exe = BIN_DIR / _exe_name()

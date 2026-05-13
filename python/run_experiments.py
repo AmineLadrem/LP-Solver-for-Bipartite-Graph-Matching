@@ -1,5 +1,3 @@
-
-
 import argparse
 import csv
 import os
@@ -29,7 +27,6 @@ CSV_FIELDS = [
 ALL_SOLVERS_PYTHON = ["lemon_hk", "gurobi_lp", "highs_lp", "scipy_lp"]
 ALL_SOLVERS_CPP    = ["lemon_hk", "gurobi_lp", "highs_lp"]
 
-
 def parse_graph_name(fname: str):
     m = re.match(r"n(\d+)_d(\d+)_s(\d+)\.graph$", fname)
     if not m:
@@ -39,14 +36,12 @@ def parse_graph_name(fname: str):
     seed   = int(m.group(3))
     return n, d, seed
 
-
 def get_m(path: Path) -> int:
     with open(path) as f:
         return int(f.readline().split()[2])
 
-
 def load_done(csv_path: Path) -> set:
-    
+
     done = set()
     if not csv_path.exists():
         return done
@@ -65,9 +60,8 @@ def load_done(csv_path: Path) -> set:
                 continue
     return done
 
-
 def make_cpp_solver(binary_name: str):
-    
+
     import psutil
 
     exe_suffix = ".exe" if os.name == "nt" else ""
@@ -158,7 +152,7 @@ def make_cpp_solver(binary_name: str):
 
             return {
                 "matching_size": parsed.get("matching_size", -1),
-                "time_seconds": elapsed,    
+                "time_seconds": elapsed,
                 "peak_memory_mb": max(parsed.get("peak_memory_mb", 0.0), peak_mb[0]),
                 "status": status_line,
                 "error_message": error_line,
@@ -178,9 +172,8 @@ def make_cpp_solver(binary_name: str):
     solve.__name__ = f"{binary_name}_cpp"
     return solve
 
-
 def build_solver_list(want_python, want_cpp):
-    
+
     import importlib
 
     solvers = []
@@ -206,12 +199,12 @@ def build_solver_list(want_python, want_cpp):
             print(f"[warn] C++ binary not found, skipping: {exe}", file=sys.stderr)
     return solvers
 
-
 def parse_args():
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--graphs-dir", type=Path, default=GRAPHS_DIR_DEFAULT)
-    p.add_argument("--output-csv", type=Path, default=RESULTS_FILE_DEFAULT,
+    p.add_argument("--output-csv", "--results-csv", type=Path, default=RESULTS_FILE_DEFAULT,
+                   dest="output_csv",
                    help="Append to this CSV (default: results/results.csv).")
     p.add_argument("--solvers-python", nargs="+", default=None,
                    choices=ALL_SOLVERS_PYTHON + ["none"],
@@ -227,12 +220,13 @@ def parse_args():
                    help="Restrict to these seeds.")
     p.add_argument("--time-limit", type=float, default=300.0,
                    help="Per-run time limit in seconds (default: 300).")
-    p.add_argument("--limit", type=int, default=None,
+    p.add_argument("--limit", "--max-graphs", type=int, default=None,
+                   dest="limit",
                    help="Stop after running this many (graph, solver) pairs.")
-    p.add_argument("--overwrite", action="store_true",
+    p.add_argument("--overwrite", "--force", action="store_true",
+                   dest="overwrite",
                    help="Re-run rows even if already present in the CSV.")
     return p.parse_args()
-
 
 def main():
     args = parse_args()
@@ -319,7 +313,6 @@ def main():
             }
             writer.writerow(row); csvf.flush()
             done.add(key)
-
 
 if __name__ == "__main__":
     main()

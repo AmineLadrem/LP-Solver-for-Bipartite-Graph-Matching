@@ -13,7 +13,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import type { AppAction, AppState } from "@/lib/appState";
-import type { AlgorithmName } from "@/lib/types";
+import { LP_SOLVER_LABELS, LP_SOLVER_DESCRIPTIONS } from "@/lib/algorithms/lp";
+import type { AlgorithmName, LPSolverMode } from "@/lib/types";
+// AlgorithmName used in AlgButton prop type below
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -26,15 +28,13 @@ interface Props {
   runDisabledReason?: string | null;
 }
 
-const ALGORITHM_LABELS: Record<AlgorithmName, string> = {
-  greedy: "Greedy",
-  hopcroftKarp: "Hopcroft-Karp",
-  lp: "LP",
-};
+const LP_ALGORITHMS: { name: LPSolverMode; label: string; description: string }[] = (
+  Object.entries(LP_SOLVER_LABELS) as [LPSolverMode, string][]
+).map(([name, label]) => ({ name, label, description: LP_SOLVER_DESCRIPTIONS[name] }));
 
 function randomSeed(currentSeed: number) {
-  const nextSeed = Math.floor(Math.random() * 1_000_000);
-  return nextSeed === currentSeed ? (nextSeed + 1) % 1_000_000 : nextSeed;
+  const next = Math.floor(Math.random() * 1_000_000);
+  return next === currentSeed ? (next + 1) % 1_000_000 : next;
 }
 
 export function ControlsPanel({
@@ -60,7 +60,7 @@ export function ControlsPanel({
         </h2>
         <div className="flex flex-col gap-4">
           <Slider
-            label="|U| - left vertices"
+            label="|U| — left vertices"
             displayValue={String(graphParams.uSize)}
             min={2}
             max={30}
@@ -71,7 +71,7 @@ export function ControlsPanel({
             }
           />
           <Slider
-            label="|W| - right vertices"
+            label="|W| — right vertices"
             displayValue={String(graphParams.wSize)}
             min={2}
             max={30}
@@ -82,7 +82,7 @@ export function ControlsPanel({
             }
           />
           <Slider
-            label="Density"
+            label="Density d = |E| / (|U||W|)"
             displayValue={graphParams.density.toFixed(2)}
             min={0.05}
             max={1}
@@ -101,10 +101,10 @@ export function ControlsPanel({
                 id="graph-seed"
                 type="number"
                 value={graphParams.seed}
-                onChange={(event) =>
+                onChange={(e) =>
                   dispatch({
                     type: "SET_GRAPH_PARAMS",
-                    params: { seed: Number.parseInt(event.target.value, 10) || 0 },
+                    params: { seed: Number.parseInt(e.target.value, 10) || 0 },
                   })
                 }
                 className="h-8 min-w-0 flex-1 rounded border border-border bg-surface-raised px-3 font-mono text-xs text-text-primary focus:outline-none focus:ring-1 focus:ring-accent"
@@ -125,24 +125,19 @@ export function ControlsPanel({
       </section>
 
       <section>
-        <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
-          Algorithm
+        <h2 className="mb-1 text-xs font-semibold uppercase tracking-wider text-text-secondary">
+          LP solver models
         </h2>
-        <div className="flex flex-col gap-1.5">
-          {(["greedy", "hopcroftKarp", "lp"] as AlgorithmName[]).map((alg) => (
-            <button
-              key={alg}
-              type="button"
-              onClick={() => dispatch({ type: "SET_ALGORITHM", algorithm: alg })}
-              className={cn(
-                "h-8 rounded px-3 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent",
-                algorithm === alg
-                  ? "bg-accent font-semibold text-background"
-                  : "text-text-secondary hover:bg-surface-raised hover:text-text-primary"
-              )}
-            >
-              {ALGORITHM_LABELS[alg]}
-            </button>
+        <div className="mt-2 flex flex-col gap-1.5">
+          {LP_ALGORITHMS.map(({ name, label, description }) => (
+            <AlgButton
+              key={name}
+              name={name}
+              label={label}
+              tooltip={description}
+              active={algorithm === name}
+              onSelect={() => dispatch({ type: "SET_ALGORITHM", algorithm: name })}
+            />
           ))}
         </div>
       </section>
@@ -238,5 +233,36 @@ export function ControlsPanel({
         </div>
       </section>
     </div>
+  );
+}
+
+function AlgButton({
+  name,
+  label,
+  tooltip,
+  active,
+  onSelect,
+}: {
+  name: AlgorithmName;
+  label: string;
+  tooltip?: string;
+  active: boolean;
+  onSelect: () => void;
+}) {
+  return (
+    <button
+      key={name}
+      type="button"
+      onClick={onSelect}
+      title={tooltip}
+      className={cn(
+        "h-8 rounded px-3 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent",
+        active
+          ? "bg-accent font-semibold text-background"
+          : "text-text-secondary hover:bg-surface-raised hover:text-text-primary"
+      )}
+    >
+      {label}
+    </button>
   );
 }

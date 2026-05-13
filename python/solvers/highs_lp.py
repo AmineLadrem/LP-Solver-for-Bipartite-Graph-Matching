@@ -1,9 +1,6 @@
-
-
 import time
 
 from ._common import make_result, memory_monitor, read_graph
-
 
 def solve(graph_path: str, time_limit: float = 300.0) -> dict:
     try:
@@ -72,7 +69,7 @@ def solve(graph_path: str, time_limit: float = 300.0) -> dict:
             h = highspy.Highs()
             h.setOptionValue("output_flag", False)
             h.setOptionValue("solver", "simplex")
-            h.setOptionValue("simplex_strategy", 4)        
+            h.setOptionValue("simplex_strategy", 4)
             h.setOptionValue("time_limit", float(time_limit))
             h.passModel(lp)
             h.run()

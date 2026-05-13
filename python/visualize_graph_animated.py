@@ -1,5 +1,3 @@
-
-
 from __future__ import annotations
 
 import argparse
@@ -13,14 +11,12 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation, PillowWriter, FFMpegWriter
 import networkx as nx
 
-
-C_U_NODE   = "#4393c3"   
-C_V_NODE   = "#d73027"   
-C_EDGE     = "#dddddd"   
-C_MATCHED  = "#e41a1c"   
-C_EXPLORE  = "#ff9900"   
+C_U_NODE   = "#4393c3"
+C_V_NODE   = "#d73027"
+C_EDGE     = "#dddddd"
+C_MATCHED  = "#e41a1c"
+C_EXPLORE  = "#ff9900"
 C_BG       = "#f8f8f8"
-
 
 DEMO = {
     "n_left": 8, "n_right": 8,
@@ -36,15 +32,12 @@ DEMO = {
     ],
 }
 
-
-
-
-Step = Dict  
+Step = Dict
 
 def matching_with_steps(
     n_left: int, n_right: int, edges: List[Tuple[int, int]]
 ) -> List[Step]:
-    
+
     adj = [[] for _ in range(n_left)]
     for u, v in edges:
         adj[u].append(v)
@@ -59,7 +52,7 @@ def matching_with_steps(
                 continue
             visited.add(v)
             new_path = path + [(u, v)]
-            
+
             steps.append({
                 "phase": "explore",
                 "path": list(new_path),
@@ -67,7 +60,7 @@ def matching_with_steps(
                 "match_r": match_r[:],
             })
             if match_r[v] == -1 or dfs(match_r[v], visited, new_path + [(-1, -1)]):
-                
+
                 match_l[u] = v
                 match_r[v] = u
                 return True
@@ -76,7 +69,7 @@ def matching_with_steps(
     for u in range(n_left):
         if match_l[u] == -1:
             found = dfs(u, set(), [])
-            
+
             steps.append({
                 "phase": "augment" if found else "fail",
                 "path": [],
@@ -86,13 +79,9 @@ def matching_with_steps(
 
     return steps
 
-
-
-
-
 def build_frames(steps: List[Step], n_left: int, n_right: int,
                  edges: List[Tuple[int, int]], pause_frames: int = 6) -> List[Dict]:
-    
+
     frames = []
     edge_set = set(edges)
 
@@ -107,7 +96,6 @@ def build_frames(steps: List[Step], n_left: int, n_right: int,
     empty_l = [-1] * n_left
     empty_r = [-1] * n_right
 
-    
     for _ in range(max(pause_frames, 3)):
         frame(empty_l, empty_r, label="Initial graph — no matching yet")
 
@@ -134,16 +122,11 @@ def build_frames(steps: List[Step], n_left: int, n_right: int,
             frame(prev_match_l, prev_match_r,
                   label="No augmenting path from this vertex — skip")
 
-    
     for _ in range(pause_frames * 3):
         frame(prev_match_l, prev_match_r,
               label=f"Done.  Maximum matching = {matching_size} edges")
 
     return frames
-
-
-
-
 
 def make_animation(graph: Dict, interval: int = 150, save_path: str | None = None):
     n_left  = graph["n_left"]
@@ -151,7 +134,6 @@ def make_animation(graph: Dict, interval: int = 150, save_path: str | None = Non
     edges   = graph["edges"]
     title   = graph.get("title", f"|U|={n_left}, |V|={n_right}, |E|={len(edges)}")
 
-    
     pos: Dict[str, Tuple[float, float]] = {}
     nL = max(n_left  - 1, 1)
     nR = max(n_right - 1, 1)
@@ -166,16 +148,13 @@ def make_animation(graph: Dict, interval: int = 150, save_path: str | None = Non
     for u, v in edges:
         G.add_edge(f"U{u}", f"V{v}")
 
-    
     steps  = matching_with_steps(n_left, n_right, edges)
     frames = build_frames(steps, n_left, n_right, edges)
 
-    
     h = max(5, min(13, max(n_left, n_right) * 0.55))
     fig, ax = plt.subplots(figsize=(7, h), facecolor=C_BG)
     ax.set_facecolor(C_BG)
 
-    
     legend_handles = [
         mpatches.Patch(color=C_U_NODE,  label=f"Left  U  ({n_left} nodes)"),
         mpatches.Patch(color=C_V_NODE,  label=f"Right V  ({n_right} nodes)"),
@@ -254,7 +233,6 @@ def make_animation(graph: Dict, interval: int = 150, save_path: str | None = Non
 
         ax.set_title(fr["label"], fontsize=10, pad=8, color="#333333")
 
-        
         ax.legend(handles=legend_handles, loc="lower center",
                   bbox_to_anchor=(0.5, -0.01), ncol=3, fontsize=8,
                   framealpha=0.9, edgecolor="#cccccc")
@@ -285,15 +263,12 @@ def make_animation(graph: Dict, interval: int = 150, save_path: str | None = Non
     else:
         plt.show()
 
-
-
 def read_graph(path: str) -> Dict:
     with open(path) as f:
         n_left, n_right, m = map(int, f.readline().split())
         edges = [tuple(map(int, f.readline().split())) for _ in range(m)]
     return {"n_left": n_left, "n_right": n_right, "edges": edges,
             "title": Path(path).name}
-
 
 def main():
     p = argparse.ArgumentParser(description=__doc__,
@@ -314,13 +289,12 @@ def main():
         if not path.exists():
             sys.exit(f"File not found: {path}")
         graph = read_graph(str(path))
-        
+
         if graph["n_left"] > 32:
             print(f"[warn] n_left={graph['n_left']} — animation may be very long. "
                   "Consider a smaller graph.", file=sys.stderr)
 
     make_animation(graph, interval=args.interval, save_path=args.save)
-
 
 if __name__ == "__main__":
     main()

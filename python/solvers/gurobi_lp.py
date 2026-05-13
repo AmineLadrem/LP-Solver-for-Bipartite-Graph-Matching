@@ -1,9 +1,6 @@
-
-
 import time
 
 from ._common import make_result, memory_monitor, read_graph
-
 
 def solve(graph_path: str, time_limit: float = 300.0) -> dict:
     try:
@@ -24,7 +21,7 @@ def solve(graph_path: str, time_limit: float = 300.0) -> dict:
 
             model = gp.Model(env=env)
             model.Params.OutputFlag = 0
-            model.Params.Method = 1            
+            model.Params.Method = 1
             model.Params.TimeLimit = time_limit
 
             x = model.addVars(m, lb=0.0, ub=1.0, obj=1.0, vtype=GRB.CONTINUOUS)

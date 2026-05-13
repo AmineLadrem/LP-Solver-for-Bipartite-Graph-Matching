@@ -1,5 +1,3 @@
-
-
 import argparse
 import sys
 import tempfile
@@ -17,7 +15,6 @@ ALL_SOLVERS = {
     "lemon_hk":  lemon_hk,
 }
 
-
 def write_tmp_graph(n_left, n_right, edges) -> str:
     fd = tempfile.NamedTemporaryFile(mode="w", suffix=".graph",
                                      delete=False, encoding="utf-8")
@@ -27,35 +24,29 @@ def write_tmp_graph(n_left, n_right, edges) -> str:
             f.write(f"{u} {w}\n")
     return fd.name
 
-
 def case_perfect_matching():
-    
+
     n = 8
     edges = [(i, i) for i in range(n)]
     return ("perfect 8x8 identity matching", n, n, edges, n)
 
-
 def case_disjoint_pairs():
-    
+
     edges = [(0, 0), (0, 1), (1, 0), (1, 1)]
     return ("complete K(2,2)", 2, 2, edges, 2)
 
-
 def case_one_to_many():
-    
+
     edges = [(0, j) for j in range(10)]
     return ("star K(1,10)", 1, 10, edges, 1)
 
-
 def case_path():
-    
+
     edges = [(0, 0), (1, 0), (1, 1), (2, 1)]
     return ("path-shaped", 3, 2, edges, 2)
 
-
 def case_empty():
     return ("empty graph", 5, 5, [], 0)
-
 
 HAND_CASES = [
     case_perfect_matching(),
@@ -64,7 +55,6 @@ HAND_CASES = [
     case_path(),
     case_empty(),
 ]
-
 
 def run_solvers(solvers, graph_path, label, expected=None):
     print(f"\n--- {label} ---")
@@ -100,7 +90,6 @@ def run_solvers(solvers, graph_path, label, expected=None):
     if not sizes:
         failures.append("no solver returned an optimal result")
     return failures
-
 
 def main():
     p = argparse.ArgumentParser()
@@ -144,7 +133,6 @@ def main():
         sys.exit(1)
     print("OK - all solvers agree on every test case.")
     sys.exit(0)
-
 
 if __name__ == "__main__":
     main()

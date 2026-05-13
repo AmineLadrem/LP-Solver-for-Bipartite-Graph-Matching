@@ -1,5 +1,3 @@
-
-
 import argparse
 import sys
 from pathlib import Path
@@ -11,8 +9,6 @@ import networkx as nx
 
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "python"))
-
-
 
 DEMO_GRAPH = {
     "n_left": 6,
@@ -28,16 +24,14 @@ DEMO_GRAPH = {
     ],
 }
 
-
 def read_graph(path: str):
     with open(path) as f:
         n_left, n_right, m = map(int, f.readline().split())
         edges = [tuple(map(int, f.readline().split())) for _ in range(m)]
     return {"n_left": n_left, "n_right": n_right, "edges": edges}
 
-
 def maximum_matching(n_left, n_right, edges):
-    
+
     match_l = [-1] * n_left
     match_r = [-1] * n_right
     adj = [[] for _ in range(n_left)]
@@ -63,7 +57,6 @@ def maximum_matching(n_left, n_right, edges):
             matched.add((u, match_l[u]))
     return matched
 
-
 def draw(graph, title="", save_path=None, max_edges_shown=300):
     n_left  = graph["n_left"]
     n_right = graph["n_right"]
@@ -80,7 +73,6 @@ def draw(graph, title="", save_path=None, max_edges_shown=300):
 
     matching = maximum_matching(n_left, n_right, edges)
 
-    
     pos = {}
     for i in range(n_left):
         pos[f"U{i}"] = (0.0, (n_left - 1 - i) / max(n_left - 1, 1))
@@ -97,29 +89,25 @@ def draw(graph, title="", save_path=None, max_edges_shown=300):
     unmatched_edges = [(f"U{u}", f"V{v}") for u, v in sampled
                        if (u, v) not in matching]
 
-    
     h = max(5, min(14, max(n_left, n_right) * 0.45))
     fig, ax = plt.subplots(figsize=(7, h))
 
-    
     nx.draw_networkx_edges(G, pos, edgelist=unmatched_edges,
                            edge_color="#cccccc", width=0.8, alpha=0.7, ax=ax)
-    
+
     nx.draw_networkx_edges(G, pos, edgelist=matched_edges,
                            edge_color="#e41a1c", width=3.0, alpha=0.95, ax=ax)
 
-    
     nx.draw_networkx_nodes(G, pos,
                            nodelist=[f"U{i}" for i in range(n_left)],
                            node_color="#4393c3", node_size=300,
                            edgecolors="white", linewidths=1.0, ax=ax)
-    
+
     nx.draw_networkx_nodes(G, pos,
                            nodelist=[f"V{j}" for j in range(n_right)],
                            node_color="#d73027", node_size=300,
                            edgecolors="white", linewidths=1.0, ax=ax)
 
-    
     if n_left <= 20 and n_right <= 20:
         nx.draw_networkx_labels(G, pos,
                                 labels={f"U{i}": f"u{i}" for i in range(n_left)},
@@ -128,13 +116,11 @@ def draw(graph, title="", save_path=None, max_edges_shown=300):
                                 labels={f"V{j}": f"v{j}" for j in range(n_right)},
                                 font_size=8, font_color="white", ax=ax)
 
-    
     ax.text(-0.08, 1.04, f"U  ({n_left} vertices)", transform=ax.transAxes,
             fontsize=11, fontweight="bold", color="#4393c3")
     ax.text( 0.78, 1.04, f"V  ({n_right} vertices)", transform=ax.transAxes,
             fontsize=11, fontweight="bold", color="#d73027")
 
-    
     legend_handles = [
         mpatches.Patch(color="#4393c3", label=f"Left side  U  ({n_left} nodes)"),
         mpatches.Patch(color="#d73027", label=f"Right side V  ({n_right} nodes)"),
@@ -163,7 +149,6 @@ def draw(graph, title="", save_path=None, max_edges_shown=300):
         plt.show()
     plt.close(fig)
 
-
 def main():
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -188,7 +173,6 @@ def main():
         title = path.name
 
     draw(graph, title=title, save_path=args.save, max_edges_shown=args.max_edges)
-
 
 if __name__ == "__main__":
     main()

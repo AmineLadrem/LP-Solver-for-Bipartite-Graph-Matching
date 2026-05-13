@@ -1,4 +1,12 @@
-export type AlgorithmName = "greedy" | "hopcroftKarp" | "lp";
+export type AlgorithmName =
+  | "greedy"
+  | "hopcroftKarp"
+  | "lp-gurobi"
+  | "lp-highs"
+  | "lp-scipy"
+  | "lp-lemon";
+
+export type LPSolverMode = "lp-gurobi" | "lp-highs" | "lp-scipy" | "lp-lemon";
 
 export type GreedyStatus = "pending" | "added" | "skipped";
 
@@ -22,6 +30,7 @@ export interface Step {
   lpObjective?: number;
   lpIntegral?: boolean;
   lpMessage?: string;
+  lpSolverMode?: LPSolverMode;
   isComplete?: boolean;
 }
 

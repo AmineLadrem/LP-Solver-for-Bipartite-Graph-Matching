@@ -6,26 +6,25 @@ import { ControlsPanel } from "@/components/ControlsPanel";
 import { Header } from "@/components/Header";
 import { Visualization } from "@/components/Visualization";
 import { useAnimationPlayer } from "@/hooks/useAnimationPlayer";
-import { appReducer, initialState } from "@/lib/appState";
+import { appReducer, initialState, isLPAlgorithm } from "@/lib/appState";
 import { runGreedy } from "@/lib/algorithms/greedy";
 import { computeHopcroftKarpMatching, runHopcroftKarp } from "@/lib/algorithms/hopcroftKarp";
-import { LP_EDGE_LIMIT, LP_VERTEX_LIMIT, runLP } from "@/lib/algorithms/lp";
-import type { AlgorithmName, AlgorithmResult, RunValidation, Step } from "@/lib/types";
+import { LP_EDGE_LIMIT, LP_VERTEX_LIMIT, LP_SOLVER_LABELS, runLP } from "@/lib/algorithms/lp";
+import type { AlgorithmName, AlgorithmResult, LPSolverMode, RunValidation, Step } from "@/lib/types";
 
 const ALGORITHM_LABELS: Record<AlgorithmName, string> = {
   greedy: "Greedy",
   hopcroftKarp: "Hopcroft-Karp",
-  lp: "LP",
+  ...LP_SOLVER_LABELS,
 };
 
 function validateRun(algorithm: AlgorithmName, vertexCount: number, edgeCount: number): RunValidation {
-  if (algorithm === "lp" && (edgeCount > LP_EDGE_LIMIT || vertexCount > LP_VERTEX_LIMIT)) {
+  if (isLPAlgorithm(algorithm) && (edgeCount > LP_EDGE_LIMIT || vertexCount > LP_VERTEX_LIMIT)) {
     return {
       allowed: false,
       reason: `LP demo is limited to at most ${LP_EDGE_LIMIT} edges and ${LP_VERTEX_LIMIT} vertices. Current graph: ${vertexCount} vertices, ${edgeCount} edges. Reduce density or graph size to run the LP view.`,
     };
   }
-
   return { allowed: true };
 }
 
@@ -55,19 +54,19 @@ export function VisualizerApp() {
       return null;
     }
 
-    const steps =
-      state.algorithm === "greedy"
-        ? runGreedy(state.graph)
-        : state.algorithm === "hopcroftKarp"
-          ? runHopcroftKarp(state.graph)
-          : runLP(state.graph);
+    let steps: Step[];
+    if (state.algorithm === "greedy") {
+      steps = runGreedy(state.graph);
+    } else if (state.algorithm === "hopcroftKarp") {
+      steps = runHopcroftKarp(state.graph);
+    } else {
+      steps = runLP(state.graph, state.algorithm as LPSolverMode);
+    }
 
     dispatch({
       type: "SET_STEPS",
       steps,
-      message: `Generated ${steps.length} steps for ${
-        ALGORITHM_LABELS[state.algorithm]
-      }. Press Play or Step Forward.`,
+      message: `Generated ${steps.length} steps for ${ALGORITHM_LABELS[state.algorithm]}. Press Play or Step Forward.`,
     });
     return steps;
   }, [state.algorithm, state.graph]);
@@ -89,7 +88,7 @@ export function VisualizerApp() {
         optimal:
           step.algorithm === "greedy"
             ? matchingSize === optimalMatchingSize
-            : step.algorithm === "hopcroftKarp" || step.algorithm === "lp"
+            : step.algorithm === "hopcroftKarp" || isLPAlgorithm(step.algorithm)
               ? true
               : "unknown",
       };

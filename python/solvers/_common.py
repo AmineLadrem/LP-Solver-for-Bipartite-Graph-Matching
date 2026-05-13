@@ -1,5 +1,3 @@
-
-
 from __future__ import annotations
 
 import os
@@ -10,9 +8,8 @@ from typing import Tuple
 
 import psutil
 
-
 def read_graph(path: str) -> Tuple[int, int, list]:
-    
+
     with open(path) as f:
         n_left, n_right, m = map(int, f.readline().split())
         edges = []
@@ -20,7 +17,6 @@ def read_graph(path: str) -> Tuple[int, int, list]:
             u, w = map(int, f.readline().split())
             edges.append((u, w))
     return n_left, n_right, edges
-
 
 def _poll_self_memory(stop_event: threading.Event, peak_mb: list) -> None:
     proc = psutil.Process(os.getpid())
@@ -33,10 +29,9 @@ def _poll_self_memory(stop_event: threading.Event, peak_mb: list) -> None:
             pass
         time.sleep(0.05)
 
-
 @contextmanager
 def memory_monitor():
-    
+
     peak_mb = [0.0]
     stop_event = threading.Event()
     thread = threading.Thread(
@@ -48,7 +43,6 @@ def memory_monitor():
     finally:
         stop_event.set()
         thread.join(timeout=0.2)
-
 
 def make_result(
     matching_size: int = -1,

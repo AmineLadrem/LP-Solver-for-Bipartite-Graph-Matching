@@ -1,5 +1,3 @@
-
-
 from __future__ import annotations
 
 import argparse
@@ -15,13 +13,11 @@ RESULTS_CSV_DEFAULT = PROJECT_ROOT / "results" / "results.csv"
 
 DEFAULT_SOLVERS = ["gurobi_lp", "highs_lp", "scipy_lp", "lemon_hk"]
 
-
 def parse_graph_name(name: str):
     m = re.match(r"n(\d+)_d(\d+)_s(\d+)\.graph$", name)
     if not m:
         return None
     return int(m.group(1)), int(m.group(2)) / 1000.0, int(m.group(3))
-
 
 def read_rows(path: Path) -> list[dict]:
     with open(path, newline="") as f:
@@ -35,7 +31,6 @@ def read_rows(path: Path) -> list[dict]:
         row["m"] = int(row["m"])
         row["matching_size"] = int(row["matching_size"])
     return rows
-
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
@@ -120,7 +115,6 @@ def main():
 
     print("\nOK - no duplicates, no missing Python rows, and optimal solvers agree.")
     sys.exit(0)
-
 
 if __name__ == "__main__":
     main()

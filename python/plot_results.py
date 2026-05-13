@@ -1,5 +1,3 @@
-
-
 from __future__ import annotations
 
 import argparse
@@ -42,10 +40,8 @@ plt.rcParams.update({
     "lines.markersize": 7,
 })
 
-
 def _style(name: str) -> dict:
     return SOLVER_STYLE.get(name, dict(color="#555555", marker="x", label=name))
-
 
 def load_data(path: Path) -> pd.DataFrame:
     df = pd.read_csv(path)
@@ -68,25 +64,20 @@ def load_data(path: Path) -> pd.DataFrame:
     )
     return df
 
-
 def optimal_data(df: pd.DataFrame) -> pd.DataFrame:
     return df[df["status"] == "optimal"].copy()
-
 
 def _agg(df: pd.DataFrame, group_col: str, val_col: str):
     grouped = df.groupby(group_col)[val_col]
     return grouped.mean(), grouped.std().fillna(0)
-
 
 def _shade(ax, xs, mean, std, color):
     lo = (mean - std).clip(lower=1e-9)
     hi = mean + std
     ax.fill_between(xs, lo, hi, alpha=0.13, color=color)
 
-
 def _grid(ax):
     ax.grid(True, which="both", ls=":", lw=0.6, alpha=0.6)
-
 
 def _format_power2_axis(ax):
     ax.set_xscale("log", base=2)
@@ -103,7 +94,6 @@ def _format_power2_axis(ax):
         ticker.FuncFormatter(_label)
     )
 
-
 def _plot_series(ax, sub: pd.DataFrame, group_col: str, y_col: str, solvers: list[str]):
     for solver in solvers:
         sd = sub[sub["solver"] == solver]
@@ -116,9 +106,16 @@ def _plot_series(ax, sub: pd.DataFrame, group_col: str, y_col: str, solvers: lis
                 label=st["label"])
         _shade(ax, xs, mean, std, st["color"])
 
+def _save_fig(fig, base_path: Path, formats: list[str]):
+    for fmt in formats:
+        p = base_path.with_suffix(f".{fmt}")
+        fig.savefig(p)
+        print(f"Saved {p}")
 
 def plot_vs_n(df: pd.DataFrame, y_col: str, ylabel: str, prefix: str,
-              solvers: list[str], figures_dir: Path):
+              solvers: list[str], figures_dir: Path, formats: list[str] = None):
+    if formats is None:
+        formats = ["pdf"]
     for density in D_VALUES:
         sub = df[np.isclose(df["density"], density, atol=1e-4)]
         if sub.empty:
@@ -133,14 +130,14 @@ def plot_vs_n(df: pd.DataFrame, y_col: str, ylabel: str, prefix: str,
         ax.legend(loc="upper left")
         _grid(ax)
         fig.tight_layout()
-        fname = figures_dir / f"{prefix}_vs_n_d{int(round(density * 1000)):03d}.pdf"
-        fig.savefig(fname)
+        base = figures_dir / f"{prefix}_vs_n_d{int(round(density * 1000)):03d}"
+        _save_fig(fig, base, formats)
         plt.close(fig)
-        print(f"Saved {fname}")
-
 
 def plot_vs_density(df: pd.DataFrame, y_col: str, ylabel: str, prefix: str,
-                    solvers: list[str], figures_dir: Path):
+                    solvers: list[str], figures_dir: Path, formats: list[str] = None):
+    if formats is None:
+        formats = ["pdf"]
     for n in N_REP:
         sub = df[df["n"] == n]
         if sub.empty:
@@ -154,13 +151,14 @@ def plot_vs_density(df: pd.DataFrame, y_col: str, ylabel: str, prefix: str,
         ax.legend(loc="upper left")
         _grid(ax)
         fig.tight_layout()
-        fname = figures_dir / f"{prefix}_vs_density_n{n:05d}.pdf"
-        fig.savefig(fname)
+        base = figures_dir / f"{prefix}_vs_density_n{n:05d}"
+        _save_fig(fig, base, formats)
         plt.close(fig)
-        print(f"Saved {fname}")
 
-
-def plot_solver_landscape(df: pd.DataFrame, solvers: list[str], figures_dir: Path):
+def plot_solver_landscape(df: pd.DataFrame, solvers: list[str], figures_dir: Path,
+                          formats: list[str] = None):
+    if formats is None:
+        formats = ["pdf"]
     density = 0.05
     sub = df[np.isclose(df["density"], density, atol=1e-4)]
     if sub.empty:
@@ -176,12 +174,9 @@ def plot_solver_landscape(df: pd.DataFrame, solvers: list[str], figures_dir: Pat
     ax.legend(loc="upper left")
     _grid(ax)
     fig.tight_layout()
-    fname = figures_dir / "solver_landscape.pdf"
-    fig.savefig(fname)
+    base = figures_dir / "solver_landscape"
+    _save_fig(fig, base, formats)
     plt.close(fig)
-    print(f"Saved {fname}")
-
-
 
 def print_summary(df_all: pd.DataFrame, df_opt: pd.DataFrame, solvers: list[str]):
     print("=== Result summary ===")
@@ -203,17 +198,19 @@ def print_summary(df_all: pd.DataFrame, df_opt: pd.DataFrame, solvers: list[str]
         slope, _ = np.polyfit(xs[-5:], ys[-5:], 1)
         print(f"  {solver:<14}: slope ~ {slope:.2f}")
 
-
 def parse_args():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--input-csv", type=Path, default=RESULTS_CSV_DEFAULT)
+    p.add_argument("--input-csv", "--results-csv", type=Path, default=RESULTS_CSV_DEFAULT,
+                   dest="input_csv")
     p.add_argument("--figures-dir", type=Path, default=FIGURES_DIR_DEFAULT)
     p.add_argument("--solvers", nargs="+", default=["gurobi_lp", "highs_lp", "scipy_lp", "lemon_hk"],
                    help="Solvers to include in the main ablation plots.")
     p.add_argument("--primary-only", action="store_true",
                    help="Use only supervisor-required solvers in main plots.")
+    p.add_argument("--format", nargs="+", default=["pdf"],
+                   choices=["pdf", "png", "svg"],
+                   help="Output format(s) for saved figures.")
     return p.parse_args()
-
 
 def main():
     args = parse_args()
@@ -231,13 +228,13 @@ def main():
         return
 
     print_summary(df_all, df_opt, args.solvers)
-    plot_vs_n(df_opt, "time_seconds", "Time (s)", "time", args.solvers, args.figures_dir)
-    plot_vs_density(df_opt, "time_seconds", "Time (s)", "time", args.solvers, args.figures_dir)
-    plot_vs_n(df_opt, "peak_memory_mb", "Peak memory (MB)", "mem", args.solvers, args.figures_dir)
-    plot_vs_density(df_opt, "peak_memory_mb", "Peak memory (MB)", "mem", args.solvers, args.figures_dir)
-    plot_solver_landscape(df_opt, args.solvers, args.figures_dir)
+    fmt = args.format
+    plot_vs_n(df_opt, "time_seconds", "Time (s)", "time", args.solvers, args.figures_dir, fmt)
+    plot_vs_density(df_opt, "time_seconds", "Time (s)", "time", args.solvers, args.figures_dir, fmt)
+    plot_vs_n(df_opt, "peak_memory_mb", "Peak memory (MB)", "mem", args.solvers, args.figures_dir, fmt)
+    plot_vs_density(df_opt, "peak_memory_mb", "Peak memory (MB)", "mem", args.solvers, args.figures_dir, fmt)
+    plot_solver_landscape(df_opt, args.solvers, args.figures_dir, fmt)
     print(f"\nAll plots saved to {args.figures_dir}")
-
 
 if __name__ == "__main__":
     main()
