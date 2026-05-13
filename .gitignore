@@ -1,2 +1,5 @@
 /presentation-slides
 /python/__pycache__
+/bin
+/build
+/python/solvers/__pycache__
